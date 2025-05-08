@@ -102,7 +102,7 @@ KAFKA_HEAP_OPTS=-javaagent:/opt/prometheus/isolator-agent-0.0.1.jar=/opt/prometh
 
 The IsolatorAgent will load the JMX Exporter agent twice, each with its own configuration. These two instances are completely isolated from each other.
 
-Access the JMX Exporter at `http://localhost:8080/metrics` and `http://localhost:9090/metrics`.
+Access the JMX Exporter at `http://<SERVER>>:8080/metrics` and `http://<SERVER>:9090/metrics`.
 
 - The metrics exported on port `8080` will have lowercase metric and label names.
 
