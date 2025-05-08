@@ -30,6 +30,83 @@ Run your Java application with the following command:
 java -javaagent:isolator-agent.jar=path/to/isolator-agent.yaml -jar your-application.jar
 ```
 
+## Real-World Example
+
+Running two instances of the Prometheus JMX Exporter with Kafka.
+
+
+### Configuration
+
+Install the IsolatorAgent and the JMX Exporter JARs:
+
+```bash
+/opt/prometheus/isolator-agent-0.0.1.jar
+/opt/prometheus/jmx_prometheus_javaagent-1.2.0.jar
+```
+
+Create the IsolatorAgent YAML configuration file `/opt/prometheus/isolator-agent.yaml`:
+
+```yaml
+javaAgents:
+  - jarPath: /opt/prometheus/jmx_prometheus_javaagent-1.2.0-post.jar
+    className: io.prometheus.jmx.JavaAgent
+    options: 8080:/opt/prometheus/all-lowercase.yaml
+  - jarPath: /opt/prometheus/jmx_prometheus_javaagent-1.2.0-post.jar
+    className: io.prometheus.jmx.JavaAgent
+    options: 9090:/opt/prometheus/all-camelcase.yaml
+```
+
+Create the Prometheus JMX Exporter YAML configuration files:
+
+`/opt/prometheus/all-lowercase.yaml`
+
+```yaml
+---
+startDelaySeconds: 120
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+rules:
+- pattern: ".*"
+```
+
+`/opt/prometheus/all-camelcase.yaml`
+
+```yaml
+---
+startDelaySeconds: 120
+httpServer:
+  authentication:
+    basic:
+      username: Prometheus
+      password: secret
+
+rules:
+- pattern: ".*"
+```
+
+Added the IsolatorAgent to a Kafka broker Java command line:
+
+Example:
+
+```bash
+KAFKA_HEAP_OPTS=-javaagent:/opt/prometheus/isolator-agent-0.0.1.jar=/opt/prometheus/isolator-agent.yaml -Xms1g -Xmx6g -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:G1HeapRegionSize=16M -XX:MinMetaspaceFreeRatio=50 -XX:MaxMetaspaceFreeRatio=80
+```
+
+### Viewing Metrics
+
+The IsolatorAgent will load the JMX Exporter agent twice, each with its own configuration.
+
+Access the JMX Exporter at `http://localhost:8080/metrics` and `http://localhost:9090/metrics`.
+
+- The metrics exported on port `8080` will have lowercase metric and label names.
+
+
+- The metrics exported on port `9090` will require HTTP authentication and also will have camelcase metric and label names.
+
+**NOTES**
+
+- The Prometheus JMX Exporter currently does not dynamically reload `httpServer` configuration.
+
 ## License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
