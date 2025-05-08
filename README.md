@@ -36,4 +36,4 @@ This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE
 
 ---
 
-Copyright (C) 2025 Doug Hoard
+Copyright (C) 2025-Present Doug Hoard
