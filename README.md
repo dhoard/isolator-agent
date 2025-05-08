@@ -29,7 +29,7 @@ javaAgents:
     className: agent.ClassName
     options: options 1
   - jarPath: some-agent.jar
-    className: agent.ClassName
+    className: agent.ClassNamegr
     options: options 2
 ```
 
@@ -51,10 +51,9 @@ java -javaagent:isolator-agent.jar=path/to/isolator-agent.yaml -jar your-applica
 
 Running two instances of the Prometheus JMX Exporter with Kafka.
 
-
 ### Configuration
 
-Install the IsolatorAgent and the JMX Exporter JARs:
+Install the IsolatorAgent and the Prometheus JMX Exporter JARs:
 
 ```bash
 /opt/prometheus/isolator-agent-0.0.1.jar
@@ -111,9 +110,9 @@ KAFKA_HEAP_OPTS=-javaagent:/opt/prometheus/isolator-agent-0.0.1.jar=/opt/prometh
 
 ### Viewing Metrics
 
-The IsolatorAgent will load the JMX Exporter agent twice, each with its own configuration. These two instances are completely isolated from each other.
+The IsolatorAgent will load the Prometheus JMX Exporter agent twice, each with its own configuration. These two instances are completely isolated from each other.
 
-Access the JMX Exporter at `http://<SERVER>>:8080/metrics` and `http://<SERVER>:9090/metrics`.
+Access the Prometheus JMX Exporter at `http://<SERVER>>:8080/metrics` and `http://<SERVER>:9090/metrics`.
 
 - The metrics exported on port `8080` will have lowercase metric and label names.
 
