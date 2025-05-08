@@ -4,7 +4,18 @@ IsolatorAgent is a Java agent that allows you to run multiple instances of the s
 
 ## Why?
 
-Sometimes you want to run multiple instances of the same Java agent with different configurations. For example, you may want to run two instances of the Prometheus JMX Exporter with different configurations. The IsolatorAgent allows you to do this by loading the same agent multiple times with different configurations in isolation.
+Sometimes you want to run multiple instances of the same Java agent with different configurations.
+
+Okay... but why?
+
+For example, you may want to run two instances of the Prometheus JMX Exporter with different configurations.
+
+- Configuration 1 could be used to export summary metrics at a short scrape interval (quick scrape)
+
+
+- Configuration 2 could be used to export detailed metrics at a longer scrape interval (slow scrape)
+
+The IsolatorAgent allows you to do this by loading the same agent multiple times with different configurations in isolation.
 
 See the [real-world example](#real-world-example) below for a practical use case.
 
