@@ -107,7 +107,7 @@ Access the JMX Exporter at `http://<SERVER>>:8080/metrics` and `http://<SERVER>:
 - The metrics exported on port `8080` will have lowercase metric and label names.
 
 
-- The metrics exported on port `9090` will require HTTP authentication and also will have camelcase metric and label names.
+- The metrics exported on port `9090` will require HTTP authentication and use camelcase metric and label names.
 
 **NOTES**
 
