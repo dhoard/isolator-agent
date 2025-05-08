@@ -1,6 +1,6 @@
 # IsolatorAgent
 
-IsolatorAgent is a Java agent that allows you to run multiple instances of the same agent with different configurations in the same JVM.
+IsolatorAgent is a Java agent that allows you to run multiple instances of the same agent with different configurations in the same JVM - completely isolated
 
 ## Why?
 
