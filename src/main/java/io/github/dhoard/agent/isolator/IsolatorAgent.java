@@ -39,6 +39,7 @@ import java.util.concurrent.Executors;
  * This class is responsible for loading Java agents from specified jar files and executing their main methods.
  * It uses a custom classloader to ensure that the agent classes are loaded correctly.
  */
+@SuppressWarnings("PMD.EmptyCatchBlock")
 public class IsolatorAgent {
 
     private static final Logger LOGGER = Logger.getLogger(IsolatorAgent.class);
