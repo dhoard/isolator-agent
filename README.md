@@ -2,6 +2,12 @@
 
 IsolatorAgent is a Java agent that allows you to run multiple instances of the same agent with different configurations in the same JVM.
 
+## Why?
+
+Sometimes you want to run multiple instances of the same Java agent with different configurations. For example, you may want to run two instances of the Prometheus JMX Exporter with different configurations. The IsolatorAgent allows you to do this by loading the same agent multiple times with different configurations in isolation.
+
+See the [real-world example](#real-world-example) below for a practical use case.
+
 ## Usage
 
 Define a YAML configuration file with the following structure:
