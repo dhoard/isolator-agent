@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2025-present Doug Hoard
+# Copyright (C) 2024-present Pipeliner project authors and contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 #
 pipeline:
   name: release
+  with:
+    output_directory: OUTPUT
   jobs:
     - name: release
       enabled: true
@@ -27,6 +29,19 @@ pipeline:
             rm -Rf $(find . -name "*versionsBackup")
         - name: rebuild
           run: ./mvnw clean package
+        - name: clean output directory
+          run: rm -Rf ${{ output_directory }}/*
+        - name: create output directory
+          run: mkdir -p ${{ output_directory }}
+        - name: copy jar
+          run: cp -R target/isolation-agent-${{ release }}.jar ${{ output_directory }}/isolation-agent-${{ release }}.jar
+        - name: create checksums
+          working_directory: ${{ output_directory }}
+          rum: |
+            md5sum isolation-agent-${{ release }}.jar | | awk '{print $1}' > isolation-agent-${{ release }}.jar.md5
+            sha1sum isolation-agent-${{ release }}.jar | awk '{print $1}' > isolation-agent-${{ release }}.jar.sha1
+            sha256sum isolation-agent-${{ release }}.jar | awk '{print $1}' > isolation-agent-${{ release }}.jar.sha256
+            sha512sum isolation-agent-${{ release }}.jar | awk '{print $1}' > isolation-agent-${{ release }}.jar.sha512
         - name: commit version
           run: |
             git add -u
