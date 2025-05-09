@@ -17,35 +17,35 @@
 package io.github.dhoard.agent.isolator;
 
 /**
- * Exception thrown when there is a configuration error.
+ * Exception thrown when there is a startup failure.
  */
-public class ConfigurationException extends RuntimeException {
+public class StartupFailedException extends RuntimeException {
 
     /**
-     * Constructs a new ConfigurationException with the specified detail message.
+     * Constructs a new StartupFailedException with the specified detail message.
      *
      * @param message The message
      */
-    public ConfigurationException(String message) {
+    public StartupFailedException(String message) {
         super(message);
     }
 
     /**
-     * Constructs a new ConfigurationException with the specified detail message and cause.
+     * Constructs a new StartupFailedException with the specified detail message and cause.
      *
      * @param message The message
      * @param cause The cause
      */
-    public ConfigurationException(String message, Throwable cause) {
+    public StartupFailedException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * Constructs a new ConfigurationException with the specified cause.
+     * Constructs a new StartupFailedException with the specified cause.
      *
      * @param cause The cause
      */
-    public ConfigurationException(Throwable cause) {
+    public StartupFailedException(Throwable cause) {
         super(cause);
     }
 }
