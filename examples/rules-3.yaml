@@ -1,0 +1,10 @@
+httpServer:
+  authentication:
+    basic:
+      username: Prometheus
+      password: secret
+includeObjectNames:
+  - "java.*:type=*,*"
+  - "jvm.*:type=*,*"
+rules:
+  - pattern: ".*"

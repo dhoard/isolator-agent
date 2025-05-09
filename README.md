@@ -69,14 +69,6 @@ Prometheus JMX Exporter metrics are available at `http://localhost:8080/metrics`
 
 - The metric and label names have difference cases.
 
-```bash
-./examples/hello-world-3.sh
-```
-
-Prometheus JMX Exporter metrics are available at `http://localhost:8080/metrics`
-
-- An agent is defined but not enabled.
-
 ## Real-World Example
 
 Running two instances of the Prometheus JMX Exporter with Kafka.
