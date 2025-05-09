@@ -49,13 +49,33 @@ javaAgents:
 
 - The `enabled` field is optional. If set to `false`, the agent configuration will be ignored.
 
-## Example
+## Examples
 
-Run your Java application with the following command:
+### Example 1
 
 ```bash
-java -javaagent:isolator-agent.jar=path/to/isolator-agent.yaml -jar your-application.jar
+./examples/hello-world.sh
 ```
+
+Prometheus JMX Exporter metrics are available at `http://localhost:8080/metrics`.
+
+### Example 2
+
+```bash
+./examples/hello-world-2.sh
+```
+
+Prometheus JMX Exporter metrics are available at `http://localhost:8080/metrics` and `http://localhost:9090/metrics`.
+
+- The metric and label names have difference cases.
+
+```bash
+./examples/hello-world-3.sh
+```
+
+Prometheus JMX Exporter metrics are available at `http://localhost:8080/metrics`
+
+- An agent is defined but not enabled.
 
 ## Real-World Example
 
@@ -132,6 +152,14 @@ Access the Prometheus JMX Exporter at `http://<SERVER>>:8080/metrics` and `http:
 **NOTES**
 
 - The Prometheus JMX Exporter currently does not dynamically reload `httpServer` configuration.
+
+## Building
+
+To build the IsolatorAgent, you need to have Java 8 or higher installed.
+
+```bash
+./mvnw clean package
+```
 
 ## License
 
