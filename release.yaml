@@ -33,14 +33,14 @@ pipeline:
         - name: create output directory
           run: mkdir -p ${{ output_directory }}
         - name: copy jar
-          run: cp -R target/isolation-agent-${{ release }}.jar ${{ output_directory }}/isolation-agent-${{ release }}.jar
+          run: cp -R target/isolator-agent-${{ release }}.jar ${{ output_directory }}/isolator-agent-${{ release }}.jar
         - name: create checksums
           working-directory: ${{ output_directory }}
           run: |
-            md5sum isolation-agent-${{ release }}.jar | | awk '{print $1}' > isolation-agent-${{ release }}.jar.md5
-            sha1sum isolation-agent-${{ release }}.jar | awk '{print $1}' > isolation-agent-${{ release }}.jar.sha1
-            sha256sum isolation-agent-${{ release }}.jar | awk '{print $1}' > isolation-agent-${{ release }}.jar.sha256
-            sha512sum isolation-agent-${{ release }}.jar | awk '{print $1}' > isolation-agent-${{ release }}.jar.sha512
+            md5sum isolator-agent-${{ release }}.jar | | awk '{print $1}' > isolator-agent-${{ release }}.jar.md5
+            sha1sum isolator-agent-${{ release }}.jar | awk '{print $1}' > isolator-agent-${{ release }}.jar.sha1
+            sha256sum isolator-agent-${{ release }}.jar | awk '{print $1}' > isolator-agent-${{ release }}.jar.sha256
+            sha512sum isolator-agent-${{ release }}.jar | awk '{print $1}' > isolator-agent-${{ release }}.jar.sha512
         - name: commit version
           run: |
             git add -u
