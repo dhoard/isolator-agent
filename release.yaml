@@ -37,7 +37,7 @@ pipeline:
         - name: create checksums
           working-directory: ${{ output_directory }}
           run: |
-            md5sum isolator-agent-${{ release }}.jar | | awk '{print $1}' > isolator-agent-${{ release }}.jar.md5
+            md5sum isolator-agent-${{ release }}.jar | awk '{print $1}' > isolator-agent-${{ release }}.jar.md5
             sha1sum isolator-agent-${{ release }}.jar | awk '{print $1}' > isolator-agent-${{ release }}.jar.sha1
             sha256sum isolator-agent-${{ release }}.jar | awk '{print $1}' > isolator-agent-${{ release }}.jar.sha256
             sha512sum isolator-agent-${{ release }}.jar | awk '{print $1}' > isolator-agent-${{ release }}.jar.sha512
