@@ -75,6 +75,9 @@ Prometheus JMX Exporter metrics are available at `http://localhost:8080/metrics`
 
 Prometheus JMX Exporter metrics are available at `http://localhost:8080/metrics`
 
+- HTTP authentication is required
+  - username `Prometheus` 
+  - password `secret`
 - An agent is defined but not enabled.
 
 ## Real-World Example

@@ -39,14 +39,14 @@ VERSION=$(cd .. && ./mvnw help:evaluate -Dexpression=project.version -q -DforceS
 
 # Check for the agent jar, copy from ../target if missing
 AGENT_JAR="isolator-agent-$VERSION.jar"
-if [[ ! -f "$AGENT_JAR" ]]; then
-    if [[ -f "../target/$AGENT_JAR" ]]; then
-        cp "../target/$AGENT_JAR" . || exit 1
-    else
-        echo "Error: $AGENT_JAR not found in current directory or ../target"
-        exit 1
-    fi
+
+# Remove the old agent jar if it exists
+if [[ -f "$AGENT_JAR" ]]; then
+    rm "$AGENT_JAR" || exit 1
 fi
+
+# Copy the agent jar from ../target if it exists
+cp "../target/$AGENT_JAR" . || exit 1
 
 # Run the Java class with the Java agent
 java -javaagent:"$AGENT_JAR"=hello-world-2.yaml -cp . HelloWorld

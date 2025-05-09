@@ -28,12 +28,8 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Isolator agent for loading and running Java agents.
@@ -46,7 +42,8 @@ public class IsolatorAgent {
 
     private static final Logger LOGGER = Logger.getLogger(IsolatorAgent.class);
 
-    private static final String AGENTMAIN = "agentmain";
+    private static final String ISOLATOR_AGENT_THREAD_NAME = "isolator-agent";
+    private static final String AGENT_MAIN_METHOD = "agentmain";
 
     /**
      * Default constructor for IsolatorAgent.
@@ -90,10 +87,6 @@ public class IsolatorAgent {
         if (!javaAgents.isEmpty()) {
             LOGGER.info("starting %d agent%s...", javaAgents.size(), javaAgents.size() == 1 ? "" : "s");
 
-            ExecutorService executor = Executors.newFixedThreadPool(javaAgents.size());
-            List<URLClassLoader> urlClassLoaders = new ArrayList<>(javaAgents.size());
-            CompletionService<Void> completion = new ExecutorCompletionService<>(executor);
-
             for (int i = 0; i < javaAgents.size(); i++) {
                 JavaAgent javaAgent = javaAgents.get(i);
 
@@ -108,43 +101,70 @@ public class IsolatorAgent {
                 LOGGER.info("agent[%d].options [%s]", i + 1, options);
 
                 URL jarUrl = jarPath.toUri().toURL();
+
+                // Create a new URLClassLoader with the jar URL
                 URLClassLoader urlClassLoader = new ChildFirstURLClassLoader(new URL[] {jarUrl}, null);
-                urlClassLoaders.add(urlClassLoader);
 
-                completion.submit(() -> {
-                    Thread.currentThread().setContextClassLoader(urlClassLoader);
-                    Class<?> agentClass = urlClassLoader.loadClass(className);
-                    Method agentMainMethod = agentClass.getMethod(AGENTMAIN, String.class, Instrumentation.class);
-                    agentMainMethod.invoke(null, options, instrumentation);
-
-                    return null;
-                });
-            }
-
-            // Wait for all agents to start successfully or fail
-            for (int i = 0; i < javaAgents.size(); i++) {
                 try {
-                    completion.take().get();
-
-                    LOGGER.info("agent[%d] started", i + 1);
-                } catch (Exception e) {
-                    executor.shutdownNow();
-
-                    for (URLClassLoader urlClassLoader : urlClassLoaders) {
-                        try {
-                            urlClassLoader.close();
-                        } catch (Throwable t) {
-                            // INTENTIONALLY BLANK
-                        }
+                    runJavaAgent(urlClassLoader, className, options, instrumentation);
+                } catch (Throwable t) {
+                    // Close the URLClassLoader to release resources
+                    try {
+                        urlClassLoader.close();
+                    } catch (Throwable t2) {
+                        // INTENTIONALLY BLANK
                     }
 
-                    throw new StartupFailedException(format("agent[%s] failed", i + 1), e);
+                    throw new JavaAgentException(format("agent[%d] failed to start", i + 1), t);
                 }
             }
 
             LOGGER.info("%d agent%s started successfully", javaAgents.size(), javaAgents.size() == 1 ? "" : "s");
         } else {
             LOGGER.info("no agents to start");
+        }
+    }
+
+    /**
+     * Run the Java agent.
+     *
+     * @param urlClassLoader  the URLClassLoader to use for loading the Java agent
+     * @param className       the name of the Java agent class
+     * @param options         the options to pass to the Java agent
+     * @param instrumentation the Instrumentation instance
+     * @throws Throwable if an error occurs during Java agent execution
+     */
+    private static void runJavaAgent(
+            URLClassLoader urlClassLoader, String className, String options, Instrumentation instrumentation)
+            throws Throwable {
+        final AtomicReference<Throwable> throwableAtomicReference = new AtomicReference<>();
+
+        Thread thread = new Thread(() -> {
+            try {
+                // Set the context class loader to the new URLClassLoader
+                // so that any spawned threads have the correct classloader
+                Thread.currentThread().setContextClassLoader(urlClassLoader);
+
+                // Load the Java agent class
+                Class<?> javaAgentClass = urlClassLoader.loadClass(className);
+
+                // Resolve the Java agent main method
+                Method javaAgentMainMethod =
+                        javaAgentClass.getMethod(AGENT_MAIN_METHOD, String.class, Instrumentation.class);
+
+                // Invoke the Java agent main method
+                javaAgentMainMethod.invoke(null, options, instrumentation);
+            } catch (Throwable t) {
+                throwableAtomicReference.set(t);
+            }
+        });
+
+        thread.setName(ISOLATOR_AGENT_THREAD_NAME);
+        thread.start();
+        thread.join();
+
+        if (throwableAtomicReference.get() != null) {
+            throw new JavaAgentException("agent failed to start", throwableAtomicReference.get());
         }
     }
 }

@@ -17,35 +17,35 @@
 package io.github.dhoard.agent.isolator;
 
 /**
- * Exception thrown when there is a startup failure.
+ * Exception thrown when there is a Java agent failure
  */
-public class StartupFailedException extends RuntimeException {
+public class JavaAgentException extends RuntimeException {
 
     /**
-     * Constructs a new StartupFailedException with the specified detail message.
+     * Constructs a new JavaAgentException with the specified detail message.
      *
      * @param message The message
      */
-    public StartupFailedException(String message) {
+    public JavaAgentException(String message) {
         super(message);
     }
 
     /**
-     * Constructs a new StartupFailedException with the specified detail message and cause.
+     * Constructs a new JavaAgentException with the specified detail message and cause.
      *
      * @param message The message
      * @param cause The cause
      */
-    public StartupFailedException(String message, Throwable cause) {
+    public JavaAgentException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * Constructs a new StartupFailedException with the specified cause.
+     * Constructs a new JavaAgentException with the specified cause.
      *
      * @param cause The cause
      */
-    public StartupFailedException(Throwable cause) {
+    public JavaAgentException(Throwable cause) {
         super(cause);
     }
 }
