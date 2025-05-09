@@ -6,7 +6,7 @@
 
     <groupId>org.github.dhoard</groupId>
     <artifactId>isolator-agent</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.1-post</version>
     <name>Isolator Agent</name>
 
     <licenses>
