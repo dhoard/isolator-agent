@@ -16,6 +16,8 @@
 
 package io.github.dhoard.agent.isolator;
 
+import static java.lang.String.format;
+
 import io.github.dhoard.agent.isolator.util.ChildFirstURLClassLoader;
 import io.github.dhoard.agent.isolator.util.Logger;
 import java.lang.instrument.Instrumentation;
@@ -120,8 +122,6 @@ public class IsolatorAgent {
                 try {
                     completion.take().get();
                 } catch (Exception e) {
-                    LOGGER.error("agent[%d] failed during startup", i + 1, e.getCause());
-
                     executor.shutdownNow();
 
                     for (URLClassLoader urlClassLoader : urlClassLoaders) {
@@ -132,7 +132,7 @@ public class IsolatorAgent {
                         }
                     }
 
-                    throw new RuntimeException("Agent startup failed", e.getCause());
+                    throw new ConfigurationException(format("Agent[%s] startup failed", i + 1), e);
                 }
             }
         }
