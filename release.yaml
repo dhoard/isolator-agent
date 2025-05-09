@@ -19,7 +19,6 @@ pipeline:
     output_directory: OUTPUT
   jobs:
     - name: release
-      enabled: true
       steps:
         - name: check for release property
           run: if [ -z "${{ release }}" ]; then echo "release variable is required, exiting" && exit 1; fi
@@ -36,7 +35,7 @@ pipeline:
         - name: copy jar
           run: cp -R target/isolation-agent-${{ release }}.jar ${{ output_directory }}/isolation-agent-${{ release }}.jar
         - name: create checksums
-          working_directory: ${{ output_directory }}
+          working-directory: ${{ output_directory }}
           run: |
             md5sum isolation-agent-${{ release }}.jar | | awk '{print $1}' > isolation-agent-${{ release }}.jar.md5
             sha1sum isolation-agent-${{ release }}.jar | awk '{print $1}' > isolation-agent-${{ release }}.jar.sha1
