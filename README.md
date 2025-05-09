@@ -1,3 +1,5 @@
+[![Build](https://github.com/dhoard/isolator-agent/actions/workflows/build.yaml/badge.svg)](https://github.com/dhoard/isolator-agent/actions/workflows/build.yaml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f2f60b7517874ce6a8cc75a6b2e18a46)](https://app.codacy.com/gh/dhoard/isolator-agent/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade) <a href="#"><img src="https://img.shields.io/badge/JDK%20compatibility-8+-blue.svg" alt="java 8+"></a> <a href="#"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="Apache 2.0"></a>
+
 # IsolatorAgent
 
 IsolatorAgent is a Java agent that allows you to run multiple instances of the same agent with different configurations in the same JVM - completely isolated
@@ -29,8 +31,12 @@ javaAgents:
     className: agent.ClassName
     options: options 1
   - jarPath: some-agent.jar
-    className: agent.ClassNamegr
+    className: agent.ClassName
     options: options 2
+  - jarPath: some-agent.jar
+    className: agent.ClassName
+    options: options 3
+    enabled: false
 ```
 
 *Notes*
@@ -38,6 +44,10 @@ javaAgents:
 - The `jarPath` is the path to the agent JAR file.
 - The `className` is the fully qualified name of the agent class.
 - The `options` are the options to pass to the agent.
+
+**Notes**
+
+- The `enabled` field is optional. If set to `false`, the agent configuration will be ignored.
 
 ## Example
 
