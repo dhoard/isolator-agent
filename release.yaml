@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-present Pipeliner project authors and contributors
+# Copyright (C) 2025-present Doug Hoard
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 pipeline:
   name: release
   with:
-    output_directory: OUTPUT
+    output_directory: RELEASE
   jobs:
     - name: release
       steps:

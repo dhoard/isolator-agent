@@ -20,6 +20,7 @@ import static java.lang.String.format;
 
 import io.github.dhoard.agent.isolator.util.ChildFirstURLClassLoader;
 import io.github.dhoard.agent.isolator.util.Logger;
+import io.github.dhoard.agent.isolator.util.Version;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -75,7 +76,7 @@ public class IsolatorAgent {
      * @throws Exception if an error occurs during agent execution
      */
     public static void premain(String agentArgument, Instrumentation instrumentation) throws Exception {
-        LOGGER.info("Starting agents...");
+        LOGGER.info("IsolatorAgent %s (https://github.com/dhoard/isolator-agent)", Version.getVersion());
         LOGGER.info("agent arguments [%s]", agentArgument);
 
         if (agentArgument == null || agentArgument.isEmpty()) {
@@ -87,6 +88,8 @@ public class IsolatorAgent {
         List<JavaAgent> javaAgents = Configuration.parse(Files.newBufferedReader(Paths.get(agentArgument)));
 
         if (!javaAgents.isEmpty()) {
+            LOGGER.info("starting %d agent%s...", javaAgents.size(), javaAgents.size() == 1 ? "" : "s");
+
             ExecutorService executor = Executors.newFixedThreadPool(javaAgents.size());
             List<URLClassLoader> urlClassLoaders = new ArrayList<>(javaAgents.size());
             CompletionService<Void> completion = new ExecutorCompletionService<>(executor);
@@ -94,15 +97,15 @@ public class IsolatorAgent {
             for (int i = 0; i < javaAgents.size(); i++) {
                 JavaAgent javaAgent = javaAgents.get(i);
 
-                LOGGER.info("Starting agent[%d]...", i + 1);
+                LOGGER.info("agent[%d] starting...", i + 1);
 
                 Path jarPath = javaAgent.getJarPath();
                 String className = javaAgent.getClassName();
                 String options = javaAgent.getOptions();
 
-                LOGGER.info("agent[%d] jar [%s]", i + 1, jarPath);
-                LOGGER.info("agent[%d] className [%s]", i + 1, className);
-                LOGGER.info("agent[%d] options [%s]", i + 1, options);
+                LOGGER.info("agent[%d].jarPath [%s]", i + 1, jarPath);
+                LOGGER.info("agent[%d].className [%s]", i + 1, className);
+                LOGGER.info("agent[%d].options [%s]", i + 1, options);
 
                 URL jarUrl = jarPath.toUri().toURL();
                 URLClassLoader urlClassLoader = new ChildFirstURLClassLoader(new URL[] {jarUrl}, null);
@@ -113,6 +116,7 @@ public class IsolatorAgent {
                     Class<?> agentClass = urlClassLoader.loadClass(className);
                     Method agentMainMethod = agentClass.getMethod(AGENTMAIN, String.class, Instrumentation.class);
                     agentMainMethod.invoke(null, options, instrumentation);
+
                     return null;
                 });
             }
@@ -121,6 +125,8 @@ public class IsolatorAgent {
             for (int i = 0; i < javaAgents.size(); i++) {
                 try {
                     completion.take().get();
+
+                    LOGGER.info("agent[%d] started", i + 1);
                 } catch (Exception e) {
                     executor.shutdownNow();
 
@@ -132,11 +138,13 @@ public class IsolatorAgent {
                         }
                     }
 
-                    throw new ConfigurationException(format("Agent[%s] startup failed", i + 1), e);
+                    throw new StartupFailedException(format("agent[%s] failed", i + 1), e);
                 }
             }
-        }
 
-        LOGGER.info("All agents started successfully");
+            LOGGER.info("%d agent%s started successfully", javaAgents.size(), javaAgents.size() == 1 ? "" : "s");
+        } else {
+            LOGGER.info("no agents to start");
+        }
     }
 }
