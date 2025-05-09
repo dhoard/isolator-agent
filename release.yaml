@@ -27,7 +27,7 @@ pipeline:
           run: |
             ./mvnw versions:set -DnewVersion="${{ release }}" -DprocessAllModules >> /dev/null
             rm -Rf $(find . -name "*versionsBackup")
-        - name: rebuild
+        - name: build
           run: ./mvnw clean package
         - name: clean output directory
           run: rm -Rf ${{ output_directory }}/*
@@ -37,7 +37,7 @@ pipeline:
           run: cp -R target/isolation-agent-${{ release }}.jar ${{ output_directory }}/isolation-agent-${{ release }}.jar
         - name: create checksums
           working_directory: ${{ output_directory }}
-          rum: |
+          run: |
             md5sum isolation-agent-${{ release }}.jar | | awk '{print $1}' > isolation-agent-${{ release }}.jar.md5
             sha1sum isolation-agent-${{ release }}.jar | awk '{print $1}' > isolation-agent-${{ release }}.jar.sha1
             sha256sum isolation-agent-${{ release }}.jar | awk '{print $1}' > isolation-agent-${{ release }}.jar.sha256
