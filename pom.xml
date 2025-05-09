@@ -33,9 +33,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>2.4</version>
+            <groupId>org.snakeyaml</groupId>
+            <artifactId>snakeyaml-engine</artifactId>
+            <version>2.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.6.3</version>
         </dependency>
     </dependencies>
 
@@ -156,9 +161,21 @@
                                     <excludes>
                                         <exclude>META-INF/MANIFEST.MF</exclude>
                                         <exclude>META-INF/versions/**</exclude>
+                                        <exclude>META-INF/maven/**</exclude>
+                                        <exclude>META-INF/org/snakeyaml/**</exclude>
+                                        <exclude>META-INF/maven/org.mapstruct/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
+                            <relocations>
+                                <relocation>
+                                    <shadedPattern>9f71e768c062e62c9d4de2e43d9499a1.</shadedPattern>
+                                    <includes>
+                                        <include>org.snakeyaml.**</include>
+                                        <include>org.mapstruct.**</include>
+                                    </includes>
+                                </relocation>
+                            </relocations>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>

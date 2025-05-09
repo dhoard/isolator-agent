@@ -16,8 +16,6 @@
 
 package io.github.dhoard.agent.isolator;
 
-import io.github.dhoard.agent.isolator.configuration.JavaAgent;
-import io.github.dhoard.agent.isolator.configuration.YamlParser;
 import io.github.dhoard.agent.isolator.util.ChildFirstURLClassLoader;
 import io.github.dhoard.agent.isolator.util.Logger;
 import java.lang.instrument.Instrumentation;
@@ -25,6 +23,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +82,7 @@ public class IsolatorAgent {
 
         // TODO: Validate the agentArgument if a file that exists
 
-        List<JavaAgent> javaAgents = YamlParser.parse(Files.newBufferedReader(Paths.get(agentArgument)));
+        List<JavaAgent> javaAgents = Configuration.parse(Files.newBufferedReader(Paths.get(agentArgument)));
 
         if (!javaAgents.isEmpty()) {
             ExecutorService executor = Executors.newFixedThreadPool(javaAgents.size());
@@ -95,7 +94,7 @@ public class IsolatorAgent {
 
                 LOGGER.info("Starting agent[%d]...", i + 1);
 
-                String jarPath = javaAgent.getJarPath();
+                Path jarPath = javaAgent.getJarPath();
                 String className = javaAgent.getClassName();
                 String options = javaAgent.getOptions();
 
@@ -103,7 +102,7 @@ public class IsolatorAgent {
                 LOGGER.info("agent[%d] className [%s]", i + 1, className);
                 LOGGER.info("agent[%d] options [%s]", i + 1, options);
 
-                URL jarUrl = Paths.get(jarPath).toUri().toURL();
+                URL jarUrl = jarPath.toUri().toURL();
                 URLClassLoader urlClassLoader = new ChildFirstURLClassLoader(new URL[] {jarUrl}, null);
                 urlClassLoaders.add(urlClassLoader);
 

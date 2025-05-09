@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package io.github.dhoard.agent.isolator.configuration;
+package io.github.dhoard.agent.isolator;
+
+import java.nio.file.Path;
 
 /**
  * Represents a Java agent configuration.
@@ -24,18 +26,9 @@ package io.github.dhoard.agent.isolator.configuration;
  */
 public class JavaAgent {
 
-    private String jarPath;
-    private String className;
-    private String options;
-
-    /**
-     * Default constructor for JavaAgent.
-     * <p>
-     * This constructor is intentionally empty and is provided for serialization purposes.
-     */
-    public JavaAgent() {
-        // INTENTIONALLY EMPTY
-    }
+    private final Path jarPath;
+    private final String className;
+    private final String options;
 
     /**
      * Constructor for JavaAgent.
@@ -44,37 +37,19 @@ public class JavaAgent {
      * @param className Name of the class to be loaded
      * @param options   Options to be passed to the agent
      */
-    public JavaAgent(String jarPath, String className, String options) {
+    public JavaAgent(Path jarPath, String className, String options) {
         this.jarPath = jarPath;
         this.className = className;
         this.options = options;
     }
 
     /**
-     * Sets the jar file path.
-     *
-     * @param jarPath Path to the jar file
-     */
-    public void setJarPath(String jarPath) {
-        this.jarPath = jarPath;
-    }
-
-    /**
-     * Gets the jar path..
+     * Gets the jar path.
      *
      * @return path to the jar file
      */
-    public String getJarPath() {
+    public Path getJarPath() {
         return jarPath;
-    }
-
-    /**
-     * Sets the class name.
-     *
-     * @param className Name of the class to be loaded
-     */
-    public void setClassName(String className) {
-        this.className = className;
     }
 
     /**
@@ -87,16 +62,7 @@ public class JavaAgent {
     }
 
     /**
-     * Sets the options to be passed to the agent.
-     *
-     * @param options Options to be passed to the agent
-     */
-    public void setOptions(String options) {
-        this.options = options;
-    }
-
-    /**
-     * Gets the options to be passed to the agent.
+     * Gets the options.
      *
      * @return options to be passed to the agent
      */
