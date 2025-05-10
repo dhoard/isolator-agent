@@ -67,48 +67,119 @@ public class Configuration {
         // Load the YAML content from the reader
         Object rootObject = load.loadFromReader(reader);
 
-        if (rootObject instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) rootObject;
-            Object javaAgentsObject = map.get(JAVA_AGENTS);
+        // Convert the root object to a map
+        Map<?, ?> javaAgentsMap = toMap(rootObject, "javaAgents must be a map");
 
-            if (javaAgentsObject instanceof List) {
-                List<?> javaAgentsList = (List<?>) javaAgentsObject;
+        // Convert the javaAgentsMap to a list
+        List<?> javaAgentsList =
+                toList(javaAgentsMap.get(JAVA_AGENTS), "javaAgents must contain a list of java agents");
 
-                for (Object javaAgentObject : javaAgentsList) {
-                    if (javaAgentObject instanceof Map) {
-                        Map<?, ?> agentMap = (Map<?, ?>) javaAgentObject;
+        for (Object javaAgentObject : javaAgentsList) {
+            // Convert each javaAgentObject to a map
+            Map<?, ?> javaAgentMap = toMap(javaAgentObject, "javaAgent must be a map");
 
-                        String jarPath = (String) agentMap.get(JAR_PATH);
-                        String className = (String) agentMap.get(CLASS_NAME);
-                        String options = (String) agentMap.get(OPTIONS);
+            // Extract the values from the map
+            String jarPath = toNonEmptyString(javaAgentMap.get(JAR_PATH), "jarPath must be a non-empty string");
+            String className = toNonEmptyString(javaAgentMap.get(CLASS_NAME), "className must be a non-empty string");
+            String options = toString(javaAgentMap.get(OPTIONS), "options must be a string");
+            boolean isEnabled = toBoolean(javaAgentMap.get(ENABLED), true, "enabled must be a boolean");
 
-                        boolean isEnabled = true;
-                        Object enabledObject = agentMap.get(ENABLED);
-
-                        if (enabledObject instanceof Boolean) {
-                            isEnabled = (Boolean) enabledObject;
-                        } else if (enabledObject instanceof String) {
-                            isEnabled = parseBoolean((String) enabledObject, true);
-                        }
-
-                        if (isEnabled) {
-                            javaAgents.add(new JavaAgent(Paths.get(jarPath), className, options));
-                        }
-                    }
-                }
+            // If the Java agent is enabled, create a new JavaAgent object and add it to the list
+            if (isEnabled) {
+                javaAgents.add(new JavaAgent(Paths.get(jarPath), className, options));
             }
         }
 
         return javaAgents;
     }
 
-    private static boolean parseBoolean(String value, boolean defaultValue) {
-        if (value == null) {
+    /**
+     * Converts an object to a list.
+     *
+     * @param object the object to convert
+     * @param errorMessage the error message to throw if the object is not a list
+     * @return the list
+     */
+    private static List<?> toList(Object object, String errorMessage) {
+        if (!(object instanceof List)) {
+            throw new ConfigurationException(errorMessage);
+        }
+
+        return (List<?>) object;
+    }
+
+    /**
+     * Converts an object to a map.
+     *
+     * @param object the object to convert
+     * @param errorMessage the error message to throw if the object is not a map
+     * @return the map
+     */
+    private static Map<?, ?> toMap(Object object, String errorMessage) {
+        if (!(object instanceof Map)) {
+            throw new ConfigurationException(errorMessage);
+        }
+
+        return (Map<?, ?>) object;
+    }
+
+    /**
+     * Converts an object to a boolean value.
+     *
+     * @param object the object to convert
+     * @param defaultValue the default value to return if the object is null
+     * @param errorMessage the error message to throw if the object is not a boolean
+     * @return the boolean value
+     */
+    private static boolean toBoolean(Object object, boolean defaultValue, String errorMessage) {
+        if (object == null) {
             return defaultValue;
         }
 
-        value = value.trim();
+        if (object instanceof Boolean) {
+            return (Boolean) object;
+        }
 
-        return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("1");
+        throw new ConfigurationException(errorMessage);
+    }
+
+    /**
+     * Converts an object to a string and trims it.
+     *
+     * @param object the object to convert
+     * @param errorMessage the error message to throw if the object is not a string
+     * @return the trimmed string
+     */
+    private static String toString(Object object, String errorMessage) {
+        if (!(object instanceof String)) {
+            throw new ConfigurationException(errorMessage);
+        }
+
+        return ((String) object).trim();
+    }
+
+    /**
+     * Converts an object to a non-empty string.
+     *
+     * @param object the object to convert
+     * @param errorMessage the error message to throw if the object is null or empty
+     * @return the non-empty string
+     */
+    private static String toNonEmptyString(Object object, String errorMessage) {
+        if (object == null) {
+            throw new ConfigurationException(errorMessage);
+        }
+
+        if (!(object instanceof String)) {
+            throw new ConfigurationException(errorMessage);
+        }
+
+        String string = ((String) object).trim();
+
+        if (string.isEmpty()) {
+            throw new ConfigurationException(errorMessage);
+        }
+
+        return string;
     }
 }

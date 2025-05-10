@@ -1,0 +1,39 @@
+#
+# Copyright (C) 2025-present Doug Hoard
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+pipeline:
+  name: package
+  with:
+    output_directory: OUTPUT
+  jobs:
+    - name: package
+      steps:
+        - name: get version
+          run: ./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout > $version
+        - name: build
+          run: ./mvnw clean package
+        - name: clean output directory
+          run: rm -Rf ${{ output_directory }}/*
+        - name: create output directory
+          run: mkdir -p ${{ output_directory }}
+        - name: copy jar
+          run: cp -R target/isolator-agent-${{ version }}.jar ${{ output_directory }}/isolator-agent-${{ version }}.jar
+        - name: create checksums
+          working-directory: ${{ output_directory }}
+          run: |
+            md5sum isolator-agent-${{ version }}.jar | awk '{print $1}' > isolator-agent-${{ version }}.jar.md5
+            sha1sum isolator-agent-${{ version }}.jar | awk '{print $1}' > isolator-agent-${{ version }}.jar.sha1
+            sha256sum isolator-agent-${{ version }}.jar | awk '{print $1}' > isolator-agent-${{ version }}.jar.sha256
+            sha512sum isolator-agent-${{ version }}.jar | awk '{print $1}' > isolator-agent-${{ version }}.jar.sha512

@@ -147,11 +147,23 @@ Access the Prometheus JMX Exporter at `http://<SERVER>>:8080/metrics` and `http:
 
 ## Building
 
-To build the IsolatorAgent, you need to have Java 8 or higher installed.
+### Requirements
+
+- Java 8 or higher
+
+### Build
 
 ```bash
 ./mvnw clean package
 ```
+
+### Package
+
+```bash
+./pipeliner package.yaml
+```
+
+- The `isolator-agent-<VERSIOM>.jar` and checksums will be created in the `OUTPUT` directory.
 
 ## License
 
