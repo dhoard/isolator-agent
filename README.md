@@ -54,7 +54,7 @@ javaAgents:
 ### Example 1
 
 ```bash
-./examples/hello-world.sh
+./examples/hello-world-1.sh
 ```
 
 Prometheus JMX Exporter metrics are available at `http://localhost:8080/metrics`.

@@ -31,6 +31,9 @@ trap cleanup EXIT INT TERM
 # Change to script directory
 cd "$EXAMPLES_DIR" || exit 1
 
+# Remove the old jar and Java class if it exists
+rm -Rf isolator-agent-*.jar HelloWorld.class || exit 1
+
 # Compile the Java test class
 javac HelloWorld.java || exit 1
 

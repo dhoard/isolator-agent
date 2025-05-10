@@ -31,6 +31,9 @@ trap cleanup EXIT INT TERM
 # Change to script directory
 cd "$EXAMPLES_DIR" || exit 1
 
+# Remove the old jar and Java class if it exists
+rm -Rf isolator-agent-*.jar HelloWorld.class || exit 1
+
 # Compile the Java test class
 javac HelloWorld.java || exit 1
 
@@ -49,6 +52,6 @@ fi
 cp "../target/$AGENT_JAR" . || exit 1
 
 # Run the Java class with the Java agent
-java -javaagent:"$AGENT_JAR"=hello-world.yaml -cp . HelloWorld
+java -javaagent:"$AGENT_JAR"=hello-world-1.yaml -cp . HelloWorld
 
 
