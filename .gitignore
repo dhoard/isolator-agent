@@ -11,6 +11,7 @@ target/
 .classpath
 dependency-reduced-pom.xml
 pom.xml.versionsBackup
+OUTPUT
 RELEASE
 examples/isolator-agent*.jar
 examples/HelloWorld.class
