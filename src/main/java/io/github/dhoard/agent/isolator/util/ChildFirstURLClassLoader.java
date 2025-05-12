@@ -46,6 +46,9 @@ public class ChildFirstURLClassLoader extends URLClassLoader {
 
             if (clazz == null) {
                 try {
+                    // Ensure the package is defined
+                    ensurePackageDefined(name);
+
                     // Load from this classloader first
                     clazz = findClass(name);
                 } catch (ClassNotFoundException e) {
@@ -63,6 +66,21 @@ public class ChildFirstURLClassLoader extends URLClassLoader {
             }
 
             return clazz;
+        }
+    }
+
+    /**
+     * Ensures that the package for the given class name is defined.
+     *
+     * @param className The name of the class
+     */
+    private void ensurePackageDefined(String className) {
+        int lastDot = className.lastIndexOf('.');
+        if (lastDot != -1) {
+            String packageName = className.substring(0, lastDot);
+            if (getPackage(packageName) == null) {
+                definePackage(packageName, null, null, null, null, null, null, null);
+            }
         }
     }
 }
